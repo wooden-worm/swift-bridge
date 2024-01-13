@@ -2,6 +2,9 @@
 //! crates/swift-bridge-ir/src/codegen/codegen_tests/shared_struct_codegen_tests.rs
 
 use crate::bridged_type::{BridgedType, SharedStruct};
+use crate::codegen::generate_rust_tokens::vec::vec_of_transparent_struct::{
+    can_generate_vec_of_transparent_struct_functions, generate_vec_of_transparent_struct_functions,
+};
 use crate::{SwiftBridgeModule, SWIFT_BRIDGE_PREFIX};
 use proc_macro2::{Span, TokenStream};
 use quote::quote;
@@ -108,6 +111,12 @@ impl SwiftBridgeModule {
             derives.push(quote! {serde::Deserialize});
         }
 
+        let vec_support = if can_generate_vec_of_transparent_struct_functions(&shared_struct) {
+            generate_vec_of_transparent_struct_functions(&shared_struct)
+        } else {
+            quote! {}
+        };
+
         let definition = quote! {
             #[derive(#(#derives),*)]
             pub struct #struct_name #struct_fields
@@ -162,6 +171,8 @@ impl SwiftBridgeModule {
                     }
                 }
             }
+
+            #vec_support
         };
 
         Some(definition)

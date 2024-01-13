@@ -595,6 +595,7 @@ impl Debug for SharedStruct {
             .field("fields", &self.fields)
             .field("swift_name", &self.swift_name.as_ref().map(|l| l.value()))
             .field("already_declared", &self.already_declared)
+            .field("derives", &self.derives)
             .finish()
     }
 }
